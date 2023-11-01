@@ -12,42 +12,60 @@ module.exports = {
     try {
       const { username, email, password, userType } = req.body;
       const existingUser = await User.findOne({ email });
+
       if (existingUser) {
         return res.status(400).json({ error: "Email already exists" });
       }
+
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = {
         username,
         email,
         password: hashedPassword,
         userType,
-  
       };
 
       if (userType === "businessUser") {
-        const trialPackage = await Package.findOne({ packageName: "trial" });
-        console.log(trialPackage);
+        let trialPackage = await Package.findOne({ packageName: "trial" });
+        if (!trialPackage) {
+          trialPackage = await Package.create({
+            packageName: "trial",
+            price: 0,
+            status: "active",
+          }).fetch();
+        }
         if (trialPackage) {
           newUser.packageId = trialPackage.id;
-          newUser.validity = moment().add(14, "days").toDate();
           newUser.status = "active";
+
+          const createdAt = new Date();
+          const validityDate = new Date(
+            createdAt.getTime() + 14 * 24 * 60 * 60 * 1000
+          );
+          validityDate.setHours(validityDate.getHours());
+          validityDate.setMinutes(validityDate.getMinutes());
+          validityDate.setSeconds(validityDate.getSeconds());
+          validityDate.setMilliseconds(validityDate.getMilliseconds());
+
+          newUser.validity = validityDate;
+
+          // Create the user
+          const createdUser = await User.create(newUser).fetch();
+
+          const tokenExpiresIn = "24h";
+          const token = await sails.helpers.generateToken(
+            email,
+            createdUser.id,
+            tokenExpiresIn
+          );
+
+          await User.updateOne({ email: createdUser.email }).set({ token });
+
+          return res.json({ user: createdUser, token });
         } else {
           return res.status(400).json({ error: "Trial package not found" });
         }
       }
-
-      const createdUser = await User.create(newUser).fetch();
-
-      const tokenExpiresIn = "24h";
-      const token = await sails.helpers.generateToken(
-        email,
-        createdUser.id,
-        tokenExpiresIn
-      );
-
-      await User.updateOne({ email: createdUser.email }).set({ token });
-
-      return res.json({ user: createdUser, token });
     } catch (error) {
       console.log(error);
       return res.serverError(error);
@@ -140,7 +158,7 @@ module.exports = {
 
   async updateUser(req, res) {
     try {
-      const { id } = req.params; 
+      const { id } = req.params;
       const { username, email, userType, packageId, validity, status } =
         req.body;
 

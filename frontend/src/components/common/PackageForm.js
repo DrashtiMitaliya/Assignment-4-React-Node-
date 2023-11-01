@@ -2,6 +2,8 @@ import React from "react";
 import { Form, Button, Toast } from "react-bootstrap";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import * as yup from "yup";
 import Header from "./Header";
@@ -36,10 +38,11 @@ const PackageForm = () => {
 
       if (response.ok) {
         const data = await response.json();
+        toast.success("Package Created Successfully");
         console.log("Package created:", data.package);
-        // Toast.success("Package created successfully!");
         window.location.href = "/all-packages";
       } else {
+        toast.error("Failed to create package");
         console.log("Failed to create package");
       }
     } catch (error) {
@@ -82,6 +85,7 @@ const PackageForm = () => {
             <span className="text-danger">{errors.price.message}</span>
           )}
         </Form.Group>
+
         <Form.Group className="mb-3" controlId="status">
           <Form.Label>Status</Form.Label>
           <Controller
@@ -89,8 +93,7 @@ const PackageForm = () => {
             control={control}
             render={({ field }) => (
               <Form.Select {...field}>
-
-                <option value="">Select status</option> 
+                <option value="">Select status</option>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </Form.Select>
@@ -104,6 +107,7 @@ const PackageForm = () => {
           Submit
         </Button>
       </Form>
+      <ToastContainer />
     </>
   );
 };

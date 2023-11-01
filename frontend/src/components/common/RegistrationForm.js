@@ -24,18 +24,17 @@ const RegistrationForm = () => {
 
       if (response.ok) {
         const userData = await response.json();
-
         if (userData.user.userType === "businessUser") {
           localStorage.setItem("token", userData.token);
           localStorage.setItem("userData", JSON.stringify(userData));
+          toast.success("Registration successful!");
           window.location.href = "/business-user";
         } else if (userData.user.userType === "mainAdmin") {
           localStorage.setItem("token", userData.token);
           localStorage.setItem("userData", JSON.stringify(userData));
-
+          toast.success("Registration successful!");
           window.location.href = "/all-packages";
         }
-        toast.success("Registration successful!");
       } else {
         toast.error("Already exist user!");
       }

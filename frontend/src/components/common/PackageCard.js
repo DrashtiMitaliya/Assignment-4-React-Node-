@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Card, Button, Form, Modal } from "react-bootstrap";
 import { AiFillEdit } from "react-icons/ai";
 import { AiFillDelete } from "react-icons/ai";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PackageCard = ({ pkg, handleDelete }) => {
   const [showModal, setShowModal] = useState(false);
@@ -20,9 +22,9 @@ const PackageCard = ({ pkg, handleDelete }) => {
 
   const statusStyle = {
     backgroundColor: pkg.status === "active" ? "green" : "black",
-    color: "white", // Text color
+    color: "white",
     padding: "5px",
-    borderRadius: "5px", // Adjust padding for better display
+    borderRadius: "5px",
   };
 
   const handleSubmit = async () => {
@@ -38,9 +40,12 @@ const PackageCard = ({ pkg, handleDelete }) => {
 
       if (response.ok) {
         const data = await response.json();
+
+        toast.success("Package updated Successfully");
         console.log("Package updated:", data.package);
         setShowModal(false);
       } else {
+        toast.error("Failed to update package");
         console.log("Failed to update package");
       }
     } catch (error) {
@@ -111,6 +116,8 @@ const PackageCard = ({ pkg, handleDelete }) => {
           </Modal.Body>
         </Modal>
       </Card.Body>
+
+      <ToastContainer />
     </Card>
   );
 };

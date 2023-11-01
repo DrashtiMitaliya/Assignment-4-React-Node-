@@ -45,9 +45,9 @@ module.exports = {
   async updatePackage(req, res) {
     try {
       const packageId = req.params.id;
-      const { name, price, status } = req.body;
+      const { packageName, price, status } = req.body;
       const updatedPackage = await Package.updateOne({ id: packageId }).set({
-        name,
+        packageName,
         price,
         status,
       });
