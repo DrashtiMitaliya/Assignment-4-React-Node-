@@ -7,6 +7,8 @@ import { AiFillDelete } from "react-icons/ai";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { message } from "../../constants/messages";
+import { api } from "../../api/api";
+import { endpoints } from "../../constants/apiEndpoints";
 
 const PackageCard = ({ pkg, handleDelete }) => {
   const [showModal, setShowModal] = useState(false);
@@ -30,17 +32,14 @@ const PackageCard = ({ pkg, handleDelete }) => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`http://localhost:1337/packages/${pkg.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(editedPackage),
-      });
+      const response = await api(
+        `${endpoints.UPDATE_PACKAGE_API}${pkg.id}`,
+        editedPackage,
+        "put"
+      );
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response && response.status === 200) {
+        const data = await response.data;
         toast.success(message.PACKAGE_UPDATED);
         console.log("Package updated:", data.package);
         setShowModal(false);
@@ -48,7 +47,7 @@ const PackageCard = ({ pkg, handleDelete }) => {
         toast.error(message.FAILED_UPDATE);
       }
     } catch (error) {
-      toast.error(message.SERVER_ERROR)
+      toast.error(message.SERVER_ERROR);
       console.error("Error:", error);
     }
   };

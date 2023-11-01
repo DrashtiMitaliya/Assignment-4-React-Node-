@@ -26,8 +26,13 @@ export const message = {
     " Password is required and should be at least 8 characters long",
 
   USER_TYPE_REQUIRED: "User type is required",
-  PACKAGE_DELETED : 'package deleted successfully' ,
-  
+  PACKAGE_DELETED: "package deleted successfully",
+  USER_DELETED: "User deleted successfully",
+  FAILED_USER_ERROR: "User deleted failed",
+};
 
-
+export const toastErrorMessage = {
+  sessionExpired: "Your token has been expired login again.",
+  internalServerError: "Something went wrong!",
+  serviceUnavailable: "Service unavailable for now try after some time.",
 };

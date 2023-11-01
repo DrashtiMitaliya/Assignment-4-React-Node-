@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import moment from "moment";
-import Header from "../../components/common/Header";
-
+import Header from "../../../components/common/Header";
+import { api } from "../../../api/api";
+import { endpoints } from "../../../constants/apiEndpoints";
 
 const BusinessUserDashboard = () => {
   const [packagesData, setPackagesData] = useState();
@@ -12,10 +13,26 @@ const BusinessUserDashboard = () => {
     const userFromLocalStorage = JSON.parse(localStorage.getItem("userData"));
     setValidity(userFromLocalStorage.user.validity);
 
-    fetch("http://localhost:1337/packages?packageName=trial")
-      .then((response) => response.json())
-      .then((data) => setPackagesData(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchData = async () => {
+      try {
+        const response = await api(endpoints.GET_ALL_PACKAGE_API, null, "get");
+        if (response && response.status === 200) {
+          const filteredPackages = response.data.filter(
+            (pack) => pack.packageName === "trial"
+          );
+
+          console.log(filteredPackages);
+          setPackagesData(filteredPackages);
+          console.log();
+        } else {
+          console.error("Error fetching data:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const trialData = packagesData?.filter(
@@ -24,7 +41,7 @@ const BusinessUserDashboard = () => {
 
   return (
     <>
-      <Header/>
+      <Header />
       <div className="container">
         <div className="my-4 " style={{ fontSize: "2rem" }}>
           Yeah !! You have default one trial pack{" "}

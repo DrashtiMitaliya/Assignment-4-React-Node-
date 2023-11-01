@@ -77,8 +77,6 @@ module.exports = {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
 
-      
-
       if (!user) {
         return res.status(401).json({ error: "oops ! user not exists" });
       }
@@ -108,10 +106,9 @@ module.exports = {
       }
 
       const token = await sails.helpers.generateToken(email, user.id, "8h");
-      //add token to database
+
       await User.updateOne({ email }, { token: token });
 
-      // Verify token for further usage
       const verifiedToken = await sails.helpers.verifyToken(token);
       console.log(token, verifiedToken);
 
@@ -124,7 +121,6 @@ module.exports = {
 
   async getAllUsers(req, res) {
     try {
-      // Retrieve all users
       const allUsers = await User.find();
       return res.json(allUsers);
     } catch (error) {
@@ -148,7 +144,10 @@ module.exports = {
   async deleteUser(req, res) {
     try {
       const userId = req.params.id;
+     
       const deletedUser = await User.destroyOne({ id: userId });
+      
+
       if (!deletedUser) {
         return res.notFound("User not found");
       }

@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { message } from "../../constants/messages";
+import { endpoints } from "../../constants/apiEndpoints";
+import { api } from "../../api/api";
 
 const LoginForm = () => {
   const {
@@ -15,18 +17,11 @@ const LoginForm = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-
     try {
-      const response = await fetch("http://localhost:1337/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await api(endpoints.LOGIN_API, data, "post");
 
-      if (response.ok) {
-        const userData = await response.json();
+      if (response.status === 200) {
+        const userData = response.data;
 
         if (userData.token) {
           localStorage.setItem("token", userData.token);

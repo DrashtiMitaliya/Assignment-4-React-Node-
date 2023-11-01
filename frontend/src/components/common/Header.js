@@ -1,14 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Navbar, Nav, Button } from "react-bootstrap";
+import { api } from "../../api/api";
+import { endpoints } from "../../constants/apiEndpoints";
 
 const Header = () => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:1337/users")
-      .then((response) => response.json())
-      .then((data) => setUserData(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchData = async () => {
+      try {
+        const response = await api(endpoints.GET_ALL_USERS_API, null, "get");
+        if (response && response.status === 200) {
+          setUserData(response.data);
+        } else {
+          console.error("Error fetching data:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleLogout = () => {

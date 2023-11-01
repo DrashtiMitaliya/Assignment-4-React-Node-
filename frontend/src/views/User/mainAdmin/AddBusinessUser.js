@@ -3,8 +3,10 @@ import { Form, Button } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
-import Header from "../../components/common/Header";
-import { message } from "../../constants/messages";
+import { message } from "../../../constants/messages";
+import Header from "../../../components/common/Header";
+import { api } from "../../../api/api";
+import { endpoints } from "../../../constants/apiEndpoints";
 
 const AddBusinessUser = () => {
   const {
@@ -15,21 +17,13 @@ const AddBusinessUser = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch("http://localhost:1337/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await api(endpoints.REGISTRATION_API, data, "post");
 
-      if (response.ok) {
-        const userData = await response.json();
+      if (response.status === 200) {
+        const userData = response.data;
 
         if (userData.user.userType === "businessUser") {
-       
           window.location.href = "/add-business-user";
-
         } else if (userData.user.userType === "mainAdmin") {
           window.location.href = "/all-packages";
         }
@@ -68,9 +62,7 @@ const AddBusinessUser = () => {
               {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
             />
             {errors.email && (
-              <span className="text-danger">
-               {message.EMAIL_REQUIRED}
-              </span>
+              <span className="text-danger">{message.EMAIL_REQUIRED}</span>
             )}
           </Form.Group>
 
@@ -81,9 +73,7 @@ const AddBusinessUser = () => {
               {...register("password", { required: true, minLength: 8 })}
             />
             {errors.password && (
-              <span className="text-danger">
-               {message.PASSWORD_REQUIRED  }
-              </span>
+              <span className="text-danger">{message.PASSWORD_REQUIRED}</span>
             )}
           </Form.Group>
 

@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 import * as yup from "yup";
 import Header from "../common/Header";
 import { message } from "../../constants/messages";
+import { api } from "../../api/api";
+import { endpoints } from "../../constants/apiEndpoints";
 
 const PackageForm = () => {
   const validationSchema = yup.object().shape({
@@ -27,18 +29,17 @@ const PackageForm = () => {
   });
 
   const onSubmit = async (packageFormData) => {
+    console.log(packageFormData);
     try {
-      const response = await fetch("http://localhost:1337/packages/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(packageFormData),
-      });
+      const response = await api(
+        endpoints.CREATE_PACKAGE_API,
+        packageFormData,
+        "post"
+      );
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response && response.status === 200) {
+        const data = response.data;
+
         toast.success(message.PACKAGE_CREATED);
         console.log("Package created:", data.package);
         window.location.href = "/all-packages";
@@ -47,7 +48,7 @@ const PackageForm = () => {
         console.log("Failed to create package");
       }
     } catch (error) {
-      toast.error(message.SERVER_ERROR)
+      toast.error(message.SERVER_ERROR);
       console.error("Error:", error);
     }
   };

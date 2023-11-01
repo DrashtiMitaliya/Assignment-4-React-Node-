@@ -36,7 +36,7 @@ module.exports = {
         price,
         status,
       }).fetch();
-      return res.status(201).json(newPackage);
+      return res.status(200).json(newPackage);
     } catch (error) {
       return res.serverError(error);
     }

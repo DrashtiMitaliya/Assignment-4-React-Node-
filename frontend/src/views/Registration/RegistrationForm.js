@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { message } from "../../constants/messages";
+import { api } from "../../api/api";
+import { endpoints } from "../../constants/apiEndpoints";
 
 const RegistrationForm = () => {
   const {
@@ -15,16 +17,9 @@ const RegistrationForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch("http://localhost:1337/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
+      const response = await api(endpoints.REGISTRATION_API, data, "post");
+      if (response.status === 200) {
+        const userData = response.data;
         if (userData.user.userType === "businessUser") {
           toast.success(message.REGISTERED_AS_BUSINESS_USER);
           localStorage.setItem("token", userData.token);
@@ -40,9 +35,43 @@ const RegistrationForm = () => {
         toast.error(message.ALREADY_EXISTS_USER);
       }
     } catch (error) {
+      console.log(error);
       toast.error(message.ERROR_IN_REGISTRATION);
     }
   };
+
+  // const onSubmit = async (data) => {
+
+  //   try {
+  //     const response = await api(endpoints.REGISTRATION_API, data, "post");
+
+  //     if (response && response.status === 200) {
+  //       const userData = response.data;
+
+  //       if (userData.user.userType === "businessUser") {
+  //         // Success: Register as Business User
+  //         // Store user data in local storage
+  //         localStorage.setItem("token", userData.token);
+  //         localStorage.setItem("userData", JSON.stringify(userData));
+  //         toast.success(message.REGISTERED_AS_BUSINESS_USER);
+  //         window.location.href = "/business-user";
+  //       } else if (userData.user.userType === "mainAdmin") {
+  //         // Success: Register as Main Admin
+  //         // Store user data in local storage
+  //         localStorage.setItem("token", userData.token);
+  //         localStorage.setItem("userData", JSON.stringify(userData));
+  //         toast.success(message.REGISTERED_AS_ADMIN_USER);
+  //         window.location.href = "/all-packages";
+  //       }
+  //     } else {
+  //       // Error: User with duplicate email
+  //       toast.error(message.ALREADY_EXISTS_USER);
+  //     }
+  //   } catch (error) {
+  //     // Error during registration process
+  //     toast.error(message.ERROR_IN_REGISTRATION);
+  //   }
+  // };
 
   return (
     <div className="container">
@@ -66,9 +95,7 @@ const RegistrationForm = () => {
             {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
           />
           {errors.email && (
-            <span className="text-danger">
-              {message.EMAIL_REQUIRED}
-            </span>
+            <span className="text-danger">{message.EMAIL_REQUIRED}</span>
           )}
         </Form.Group>
 
@@ -79,9 +106,7 @@ const RegistrationForm = () => {
             {...register("password", { required: true, minLength: 8 })}
           />
           {errors.password && (
-            <span className="text-danger">
-              {message.EMAIL_REQUIRED}
-            </span>
+            <span className="text-danger">{message.EMAIL_REQUIRED}</span>
           )}
         </Form.Group>
 

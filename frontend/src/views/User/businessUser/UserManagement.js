@@ -4,8 +4,10 @@ import { AiFillEdit } from "react-icons/ai";
 import { AiFillDelete } from "react-icons/ai";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Header from "../../components/common/Header";
-import { message } from "../../constants/messages";
+import Header from "../../../components/common/Header";
+import { message } from "../../../constants/messages";
+import { api } from "../../../api/api";
+import { endpoints } from "../../../constants/apiEndpoints";
 
 const UserManagement = () => {
   const [users, setUsers] = useState(null);
@@ -19,33 +21,44 @@ const UserManagement = () => {
   });
 
   useEffect(() => {
-    fetch("http://localhost:1337/users")
-      .then((response) => response.json())
-      .then((data) =>
-        setUsers(data.filter((user) => user.userType === "businessUser"))
-      )
-      .catch((error) => console.error("Error fetching users:", error));
+    const fetchData = async () => {
+      try {
+        const response = await api(endpoints.GET_ALL_USERS_API, null, "get");
+        if (response && response.status === 200) {
+          setUsers(
+            response.data.filter((user) => user.userType === "businessUser")
+          );
+        } else {
+          console.error("Error fetching data:", response);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleDelete = (id) => {
-    fetch(`http://localhost:1337/users/${id}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (response.ok) {
-          toast.success("User deleted successfully!");
-          console.log("User deleted successfully");
-
-          setUsers(users.filter((user) => user.id !== id));
-        } else {
-          console.error("Failed to delete user");
-        }
-      })
-      .catch((error) => {
-        // Handle error
-        console.error("Error deleting user:", error);
-      });
+  const handleDelete = async (id) => {
+    try {
+      const response = await api(
+        `${endpoints.DELETE_USERS_API}${id}`,
+        null,
+        "delete"
+      );
+      if (response && response.status === 200) {
+        toast.success(message.USER_DELETED);
+        setUsers(users.filter((user) => user.id !== id));
+      } else {
+        toast.error(message.FAILED_USER_ERROR);
+        console.error("Error response data:", response.data);
+      }
+    } catch (error) {
+      toast.error(message.SERVER_ERROR);
+      console.error("Error deleting user:", error);
+    }
   };
+
   const handleEdit = (user) => {
     setSelectedUser(user);
     setEditedUser({
@@ -57,37 +70,36 @@ const UserManagement = () => {
     setShowEditModal(true);
   };
 
-  const handleUpdate = () => {
-    fetch(`http://localhost:1337/users/${editedUser.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: editedUser.username,
-        email: editedUser.email,
-        status: editedUser.status,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          toast.success(message.BUSINESS_USER_UPDATED);
+  const handleUpdate = async () => {
+    try {
+      const response = await api(
+        `${endpoints.UPDATE_USERS_API}${editedUser.id}`,
+        {
+          username: editedUser.username,
+          email: editedUser.email,
+          status: editedUser.status,
+        },
+        "put"
+      );
 
-          fetch("http://localhost:1337/users")
-            .then((response) => response.json())
-            .then((data) =>
-              setUsers(data.filter((user) => user.userType === "businessUser"))
-            )
-            .catch((error) => console.error("Error fetching users:", error));
+      if (response && response.status === 200) {
+        toast.success(message.BUSINESS_USER_UPDATED);
+
+        const usersResponse = await api("users", null, "get");
+        if (usersResponse && usersResponse.status === 200) {
+          const data = usersResponse.data;
+          setUsers(data.filter((user) => user.userType === "businessUser"));
           setShowEditModal(false);
         } else {
           toast.error(message.FAILED_UPDATE_USER);
         }
-      })
-      .catch((error) => {
-        toast.error(message.SERVER_ERROR);
-        console.error("Error updating user:", error);
-      });
+      } else {
+        toast.error(message.FAILED_UPDATE_USER);
+      }
+    } catch (error) {
+      toast.error(message.SERVER_ERROR);
+      console.error("Error updating user:", error);
+    }
   };
 
   return (
