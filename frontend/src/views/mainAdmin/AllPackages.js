@@ -2,8 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { Button, Container, Row, Col } from "react-bootstrap";
-import Header from "./Header";
-import PackageCard from "./PackageCard";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Header from "../../components/common/Header";
+import PackageCard from "../../components/package/PackageCard";
+import { message } from "../../constants/messages";
+
 
 const AllPackagesPage = () => {
   const [packages, setPackages] = useState([]);
@@ -26,7 +30,6 @@ const AllPackagesPage = () => {
   };
 
   const handleDelete = async (packageId) => {
-    
     try {
       await fetch(`http://localhost:1337/packages/${packageId}`, {
         method: "DELETE",
@@ -35,9 +38,10 @@ const AllPackagesPage = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-   
+      toast.success(message.PACKAGE_DELETED)
       setPackages(packages.filter((pkg) => pkg.id !== packageId));
     } catch (error) {
+      toast.error(message.SERVER_ERROR)
       console.error("Error deleting package:", error);
     }
   };
@@ -60,6 +64,7 @@ const AllPackagesPage = () => {
           Add Package
         </Button>
       </Container>
+      <ToastContainer />
     </>
   );
 };

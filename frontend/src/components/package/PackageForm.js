@@ -6,16 +6,17 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import * as yup from "yup";
-import Header from "./Header";
+import Header from "../common/Header";
+import { message } from "../../constants/messages";
 
 const PackageForm = () => {
   const validationSchema = yup.object().shape({
-    packageName: yup.string().required("Package Name is required"),
+    packageName: yup.string().required(message.PACKAGE_NAME_REQUIRED),
     price: yup
       .number()
-      .typeError("Price must be a number")
-      .required("Price is required"),
-    status: yup.string().required("Status is required"),
+      .typeError(message.PRICE_SHOULD_NUMBER)
+      .required(message.PRICE_REQUIRED),
+    status: yup.string().required(message.STATUS_REQUIRED),
   });
   const {
     control,
@@ -38,14 +39,15 @@ const PackageForm = () => {
 
       if (response.ok) {
         const data = await response.json();
-        toast.success("Package Created Successfully");
+        toast.success(message.PACKAGE_CREATED);
         console.log("Package created:", data.package);
         window.location.href = "/all-packages";
       } else {
-        toast.error("Failed to create package");
+        toast.error(message.FAILED_PACKAGE_CREATION);
         console.log("Failed to create package");
       }
     } catch (error) {
+      toast.error(message.SERVER_ERROR)
       console.error("Error:", error);
     }
   };

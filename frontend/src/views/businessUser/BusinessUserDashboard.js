@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import moment from "moment";
-import Header from "../common/Header";
+import Header from "../../components/common/Header";
+
 
 const BusinessUserDashboard = () => {
   const [packagesData, setPackagesData] = useState();
@@ -23,9 +24,9 @@ const BusinessUserDashboard = () => {
 
   return (
     <>
-      <Header />
+      <Header/>
       <div className="container">
-        <div className="mt-4 " style={{ fontSize: "2rem" }}>
+        <div className="my-4 " style={{ fontSize: "2rem" }}>
           Yeah !! You have default one trial pack{" "}
         </div>
 

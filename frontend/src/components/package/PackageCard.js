@@ -6,6 +6,7 @@ import { AiFillEdit } from "react-icons/ai";
 import { AiFillDelete } from "react-icons/ai";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { message } from "../../constants/messages";
 
 const PackageCard = ({ pkg, handleDelete }) => {
   const [showModal, setShowModal] = useState(false);
@@ -40,15 +41,14 @@ const PackageCard = ({ pkg, handleDelete }) => {
 
       if (response.ok) {
         const data = await response.json();
-
-        toast.success("Package updated Successfully");
+        toast.success(message.PACKAGE_UPDATED);
         console.log("Package updated:", data.package);
         setShowModal(false);
       } else {
-        toast.error("Failed to update package");
-        console.log("Failed to update package");
+        toast.error(message.FAILED_UPDATE);
       }
     } catch (error) {
+      toast.error(message.SERVER_ERROR)
       console.error("Error:", error);
     }
   };

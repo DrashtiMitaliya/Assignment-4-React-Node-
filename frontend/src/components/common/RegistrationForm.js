@@ -1,9 +1,10 @@
 import { useForm } from "react-hook-form";
 import React from "react";
 import { Form, Button } from "react-bootstrap";
-import { Link, json } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { message } from "../../constants/messages";
 
 const RegistrationForm = () => {
   const {
@@ -25,21 +26,21 @@ const RegistrationForm = () => {
       if (response.ok) {
         const userData = await response.json();
         if (userData.user.userType === "businessUser") {
+          toast.success(message.REGISTERED_AS_BUSINESS_USER);
           localStorage.setItem("token", userData.token);
           localStorage.setItem("userData", JSON.stringify(userData));
-          toast.success("Registration successful!");
           window.location.href = "/business-user";
         } else if (userData.user.userType === "mainAdmin") {
+          toast.success(message.REGISTERED_AS_ADMIN_USER);
           localStorage.setItem("token", userData.token);
           localStorage.setItem("userData", JSON.stringify(userData));
-          toast.success("Registration successful!");
           window.location.href = "/all-packages";
         }
       } else {
-        toast.error("Already exist user!");
+        toast.error(message.ALREADY_EXISTS_USER);
       }
     } catch (error) {
-      toast.error("Error in registration!");
+      toast.error(message.ERROR_IN_REGISTRATION);
     }
   };
 
@@ -54,7 +55,7 @@ const RegistrationForm = () => {
             {...register("username", { required: true })}
           />
           {errors.username && (
-            <span className="text-danger">Username is required</span>
+            <span className="text-danger">{message.USERNAME_REQUIRED}</span>
           )}
         </Form.Group>
 
@@ -66,7 +67,7 @@ const RegistrationForm = () => {
           />
           {errors.email && (
             <span className="text-danger">
-              Email is required and should be valid
+              {message.EMAIL_REQUIRED}
             </span>
           )}
         </Form.Group>
@@ -79,7 +80,7 @@ const RegistrationForm = () => {
           />
           {errors.password && (
             <span className="text-danger">
-              Password is required and should be at least 8 characters long
+              {message.EMAIL_REQUIRED}
             </span>
           )}
         </Form.Group>
@@ -92,7 +93,7 @@ const RegistrationForm = () => {
             <option value="businessUser">Business User</option>
           </Form.Select>
           {errors.userType && (
-            <span className="text-danger">User type is required</span>
+            <span className="text-danger">{message.userType}</span>
           )}
         </Form.Group>
 

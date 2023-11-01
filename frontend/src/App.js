@@ -3,12 +3,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import LoginForm from "./components/common/LoginForm";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import RegistrationForm from "./components/common/RegistrationForm";
-import MainAdminDashboard from "./components/mainAdmin/MainAdminDashboard";
-import BusinessUserDashboard from "./components/businessUser/BusinessUserDashboard";
-import PackageForm from "./components/common/PackageForm";
-import AllPackagesPage from "./components/common/AllPackages";
-import UserManagement from "./components/businessUser/UserManagement";
-import AddBusinessUser from "./components/mainAdmin/AddBusinessUser";
+
+import BusinessUserDashboard from "./views/businessUser/BusinessUserDashboard";
+import AllPackagesPage from './views/mainAdmin/AllPackages'
+import UserManagement from './views/businessUser/UserManagement'
+import AddBusinessUser from './views/mainAdmin/AddBusinessUser'
+import PackageForm from './components/package/PackageForm'
+
 
 
 function App() {

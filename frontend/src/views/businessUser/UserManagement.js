@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Toast } from "react-bootstrap";
-import Header from "../common/Header";
+import { Table, Button, Modal, Form } from "react-bootstrap";
 import { AiFillEdit } from "react-icons/ai";
 import { AiFillDelete } from "react-icons/ai";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "../../components/common/Header";
+import { message } from "../../constants/messages";
 
 const UserManagement = () => {
   const [users, setUsers] = useState(null);
@@ -70,8 +71,7 @@ const UserManagement = () => {
     })
       .then((response) => {
         if (response.ok) {
-          toast.success("User updated successfully");
-          console.log("User updated successfully");
+          toast.success(message.BUSINESS_USER_UPDATED);
 
           fetch("http://localhost:1337/users")
             .then((response) => response.json())
@@ -81,10 +81,11 @@ const UserManagement = () => {
             .catch((error) => console.error("Error fetching users:", error));
           setShowEditModal(false);
         } else {
-          console.error("Failed to update user");
+          toast.error(message.FAILED_UPDATE_USER);
         }
       })
       .catch((error) => {
+        toast.error(message.SERVER_ERROR);
         console.error("Error updating user:", error);
       });
   };

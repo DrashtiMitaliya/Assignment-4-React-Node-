@@ -11,9 +11,6 @@ const Header = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
- 
-
- 
   const handleLogout = () => {
     setUserData({});
     window.location.href = "/";
@@ -22,7 +19,6 @@ const Header = () => {
   return (
     <Navbar bg="light" expand="lg" className="p-4">
       <Navbar.Brand href="#">User-Roles</Navbar.Brand>
-
       <div className="d-flex justify-content-end gap-3">
         Role :
         {localStorage.getItem("userData") &&
